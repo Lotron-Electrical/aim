@@ -83,16 +83,16 @@ function drawBotSprite(ctx, x, y, modules, scale, flipped, element, opts = {}) {
   if (ghostAlpha > 0) {
     ctx.save();
     ctx.globalAlpha = ghostAlpha * 0.3;
-    const dominant = Object.entries(modules).sort((a, b) => b[1] - a[1])[0][0];
-    ctx.fillStyle = MODULES[dominant].color;
+    const dominant = Object.entries(modules).sort((a, b) => b[1] - a[1])[0]?.[0];
+    ctx.fillStyle = (dominant && MODULES[dominant]?.color) || "#ff0040";
     ctx.fillRect(bodyX, bodyY + 12, bodyW * s, bodyH * s);
     ctx.restore();
     ctx.globalAlpha = alpha;
   }
 
   // Body color
-  const dominant = Object.entries(modules).sort((a, b) => b[1] - a[1])[0][0];
-  const bodyColor = tintColor || MODULES[dominant].color + "cc";
+  const dominant = Object.entries(modules).sort((a, b) => b[1] - a[1])[0]?.[0];
+  const bodyColor = tintColor || ((dominant && MODULES[dominant]?.color) || "#ff0040") + "cc";
   ctx.fillStyle = bodyColor;
   ctx.fillRect(bodyX, bodyY, bodyW * s, bodyH * s);
 
@@ -251,6 +251,7 @@ export default function BattleArena({ bot1, bot2, latestTurn }) {
 
     const action1 = parseAction(latestTurn.bot1?.action);
     const action2 = parseAction(latestTurn.bot2?.action);
+    console.log("[BattleArena] Turn animation triggered:", turnNum, action1, action2);
 
     anim.turnAnim = {
       turn: turnNum,
@@ -295,6 +296,7 @@ export default function BattleArena({ bot1, bot2, latestTurn }) {
 
     function frame(now) {
       rafId = requestAnimationFrame(frame);
+      try {
 
       const anim = animRef.current;
       const dt = Math.min(now - anim.lastFrameTime, 50); // cap dt to avoid spiral
@@ -306,7 +308,7 @@ export default function BattleArena({ bot1, bot2, latestTurn }) {
       const b1 = bot1Ref.current;
       const b2 = bot2Ref.current;
       const turn = latestTurnRef.current;
-      if (!b1 || !b2) return;
+      if (!b1 || !b2 || !b1.modules || !b2.modules) return;
 
       // ── Update phase ──
 
@@ -551,8 +553,13 @@ export default function BattleArena({ bot1, bot2, latestTurn }) {
       }
 
       ctx.restore();
+
+      } catch (err) {
+        console.error("[BattleArena] frame error:", err);
+      }
     }
 
+    console.log("[BattleArena] rAF loop started, canvas:", canvasSize.w, "x", canvasSize.h);
     rafId = requestAnimationFrame(frame);
     return () => cancelAnimationFrame(rafId);
   }, [canvasSize]); // only restart loop if canvas resizes
@@ -823,7 +830,6 @@ function spawnActionEffect(
     attacker.element && ELEMENTS[attacker.element]
       ? ELEMENTS[attacker.element].color
       : "#ff0040";
-  const modColor = MODULES[action.module]?.color || "#ffffff";
 
   // ATTACK behaviors
   if (action.module === "ATTACK") {
