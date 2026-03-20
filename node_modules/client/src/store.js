@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { socket } from "./socket.js";
-import { EVENTS, MODULES, TOTAL_TRAINING_POINTS, MODULE_NAMES } from "shared";
+import { EVENTS, MODULES, TOTAL_TRAINING_POINTS, MODULE_NAMES, ELEMENT_NAMES } from "shared";
 
 const useStore = create((set, get) => ({
   // --- Connection ---
@@ -20,6 +20,7 @@ const useStore = create((set, get) => ({
 
   // --- Bot Building ---
   botName: "",
+  element: "VOLT",
   modules: { ATTACK: 3, DEFENSE: 3, TACTICS: 3, OVERCLOCK: 3 },
   priorities: {
     ATTACK: [],
@@ -98,6 +99,7 @@ const useStore = create((set, get) => ({
       turnResults: [],
       battleEnd: null,
       botName: "",
+      element: "VOLT",
       modules: { ATTACK: 3, DEFENSE: 3, TACTICS: 3, OVERCLOCK: 3 },
       coreStats: null,
       simResult: null,
@@ -106,6 +108,7 @@ const useStore = create((set, get) => ({
 
   // --- Bot Building ---
   setBotName: (name) => set({ botName: name }),
+  setElement: (el) => set({ element: el }),
 
   setModuleLevel: (module, level) => {
     const { modules } = get();
@@ -131,9 +134,10 @@ const useStore = create((set, get) => ({
   },
 
   submitBot: () => {
-    const { botName, modules, priorities, coreStats } = get();
+    const { botName, modules, priorities, coreStats, element } = get();
     const config = {
       name: botName || "UNNAMED-BOT",
+      element,
       modules,
       priorities,
       coreStats: coreStats || undefined,
@@ -147,11 +151,12 @@ const useStore = create((set, get) => ({
 
   // --- Training Sim ---
   runSim: () => {
-    const { botName, modules, priorities, coreStats } = get();
+    const { botName, modules, priorities, coreStats, element } = get();
     set({ simRunning: true, simResult: null });
 
     const config = {
       name: botName || "UNNAMED-BOT",
+      element,
       modules,
       priorities,
       coreStats: coreStats || undefined,
@@ -181,6 +186,7 @@ const useStore = create((set, get) => ({
       opponentReady: false,
       simResult: null,
       botName: "",
+      element: "VOLT",
       modules: { ATTACK: 3, DEFENSE: 3, TACTICS: 3, OVERCLOCK: 3 },
       coreStats: null,
     });

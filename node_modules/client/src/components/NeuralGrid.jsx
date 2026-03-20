@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { MODULES, MODULE_NAMES } from "shared";
 
 const NODE_RADIUS = 6;
@@ -11,6 +11,22 @@ const COLORS = {
 
 export default function NeuralGrid({ modules }) {
   const canvasRef = useRef(null);
+  const containerRef = useRef(null);
+  const [canvasSize, setCanvasSize] = useState({ w: 300, h: 200 });
+
+  // Responsive canvas sizing
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const ro = new ResizeObserver((entries) => {
+      const cr = entries[0].contentRect;
+      const w = Math.floor(cr.width);
+      const h = Math.floor(w * (2 / 3));
+      if (w > 0) setCanvasSize({ w, h });
+    });
+    ro.observe(container);
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -121,34 +137,18 @@ export default function NeuralGrid({ modules }) {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText("AI", cx, cy);
-  }, [modules]);
-
-  // Animate
-  useEffect(() => {
-    let frame;
-    const animate = () => {
-      const canvas = canvasRef.current;
-      if (canvas) {
-        // Trigger re-render by re-running the draw
-        const event = new Event("redraw");
-        canvas.dispatchEvent(event);
-      }
-      frame = requestAnimationFrame(animate);
-    };
-    frame = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(frame);
-  }, []);
+  }, [modules, canvasSize]);
 
   return (
-    <div className="border border-neon-green-dim bg-bg p-2">
+    <div ref={containerRef} className="border border-neon-green-dim bg-bg p-2">
       <h3 className="font-pixel text-[8px] text-neon-green mb-2">
         NEURAL NETWORK
       </h3>
       <canvas
         ref={canvasRef}
-        width={300}
-        height={200}
-        className="w-full bg-bg"
+        width={canvasSize.w}
+        height={canvasSize.h}
+        className="w-full max-w-full bg-bg"
         style={{ imageRendering: "pixelated" }}
       />
     </div>

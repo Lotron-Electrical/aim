@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import useStore from "../store.js";
-import { MODULES, MODULE_NAMES, TOTAL_TRAINING_POINTS } from "shared";
+import { MODULES, MODULE_NAMES, TOTAL_TRAINING_POINTS, ELEMENTS, ELEMENT_NAMES } from "shared";
 import TrainingSlider from "../components/TrainingSlider.jsx";
 import NeuralGrid from "../components/NeuralGrid.jsx";
 import BotCard from "../components/BotCard.jsx";
@@ -17,6 +17,8 @@ export default function BuildScreen() {
     priorities,
     setPriorities,
     getRemainingPoints,
+    element,
+    setElement,
     submitBot,
     runSim,
     simResult,
@@ -46,9 +48,9 @@ export default function BuildScreen() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen p-4 pt-6">
+    <div className="flex flex-col min-h-screen p-2 pt-3 sm:p-4 sm:pt-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4 max-w-4xl mx-auto w-full">
+      <div className="flex items-center justify-between mb-3 sm:mb-4 max-w-4xl mx-auto w-full">
         <div>
           <h2 className="font-pixel text-sm text-neon-green glow-green">
             BOT BUILDER
@@ -70,7 +72,7 @@ export default function BuildScreen() {
         </div>
       </div>
 
-      <div className="flex-1 max-w-4xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="flex-1 max-w-4xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6">
         {/* Left: Build Controls */}
         <div className="space-y-4">
           {/* Bot Name */}
@@ -89,6 +91,38 @@ export default function BuildScreen() {
                          disabled:opacity-50"
               maxLength={20}
             />
+          </div>
+
+          {/* Element Picker */}
+          <div className="border border-neon-green-dim p-3 bg-bg-panel">
+            <span className="font-pixel text-[8px] text-neon-green block mb-2">
+              ELEMENT TYPE
+            </span>
+            <div className="flex gap-2">
+              {ELEMENT_NAMES.map((el) => {
+                const selected = element === el;
+                const color = ELEMENTS[el].color;
+                return (
+                  <button
+                    key={el}
+                    disabled={submitted}
+                    onClick={() => {
+                      setElement(el);
+                      SoundManager.play("click");
+                    }}
+                    className="flex-1 font-pixel text-[8px] py-2 border-2 transition-all disabled:cursor-not-allowed"
+                    style={{
+                      borderColor: selected ? color : color + "40",
+                      color: selected ? color : color + "80",
+                      backgroundColor: selected ? color + "15" : "transparent",
+                      boxShadow: selected ? `0 0 8px ${color}60` : "none",
+                    }}
+                  >
+                    {el}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Training Points */}
@@ -200,6 +234,7 @@ export default function BuildScreen() {
               name={botName || "UNNAMED"}
               modules={modules}
               coreStats={coreStats}
+              element={element}
             />
           )}
           {showSim && simResult && (
