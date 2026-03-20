@@ -1,21 +1,21 @@
-import React, { useState, useEffect, useRef } from 'react';
-import useStore from '../store.js';
-import { SoundManager } from '../audio/SoundManager.js';
+import React, { useState, useEffect, useRef } from "react";
+import useStore from "../store.js";
+import { SoundManager } from "../audio/SoundManager.js";
 
 const BOOT_LINES = [
-  'BIOS v3.14 ... OK',
-  'RAM: 640K ... sufficient',
-  'Neural coprocessor ... ONLINE',
-  'Loading AIm kernel ...',
-  'Initializing battle protocols ...',
-  'Calibrating ELO matrix ...',
-  '',
-  '> SYSTEM READY',
+  "BIOS v3.14 ... OK",
+  "RAM: 640K ... sufficient",
+  "Neural coprocessor ... ONLINE",
+  "Loading AIm kernel ...",
+  "Initializing battle protocols ...",
+  "Calibrating ELO matrix ...",
+  "",
+  "> SYSTEM READY",
 ];
 
 export default function TitleScreen() {
   const connect = useStore((s) => s.connect);
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
   const [bootPhase, setBootPhase] = useState(0); // 0=booting, 1=logo, 2=input
   const [visibleLines, setVisibleLines] = useState([]);
   const [showCursor, setShowCursor] = useState(true);
@@ -51,7 +51,7 @@ export default function TitleScreen() {
     e.preventDefault();
     if (!name.trim()) return;
     SoundManager.init();
-    SoundManager.play('powerUp');
+    SoundManager.play("powerUp");
     connect(name.trim());
   };
 
@@ -60,7 +60,10 @@ export default function TitleScreen() {
       {/* Boot text */}
       <div className="w-full max-w-lg mb-8 font-pixel text-[8px] sm:text-[10px] text-neon-green-dim leading-relaxed">
         {visibleLines.map((line, i) => (
-          <div key={i} className={line.startsWith('>') ? 'text-neon-green glow-green' : ''}>
+          <div
+            key={i}
+            className={line.startsWith(">") ? "text-neon-green glow-green" : ""}
+          >
             {line}
           </div>
         ))}
@@ -80,7 +83,10 @@ export default function TitleScreen() {
 
       {/* Name input */}
       {bootPhase >= 2 && (
-        <form onSubmit={handleSubmit} className="flex flex-col items-center gap-4 w-full max-w-xs">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col items-center gap-4 w-full max-w-xs"
+        >
           <div className="w-full">
             <label className="font-pixel text-[8px] text-cyan block mb-2">
               ENTER CALLSIGN:
@@ -95,7 +101,11 @@ export default function TitleScreen() {
                 autoFocus
                 maxLength={20}
               />
-              <span className={`text-neon-green font-pixel text-xs ${showCursor ? '' : 'invisible'}`}>_</span>
+              <span
+                className={`text-neon-green font-pixel text-xs ${showCursor ? "" : "invisible"}`}
+              >
+                _
+              </span>
             </div>
           </div>
           <button

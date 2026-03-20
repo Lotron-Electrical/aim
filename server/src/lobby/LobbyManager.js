@@ -1,12 +1,12 @@
 // ============================================================
 // AIm — Lobby Manager
 // ============================================================
-import { ELO } from 'shared';
+import { ELO } from "shared";
 
 export class LobbyManager {
   constructor() {
-    this.rooms = new Map();     // roomId -> Room
-    this.players = new Map();   // socketId -> { name, roomId, rating, stats }
+    this.rooms = new Map(); // roomId -> Room
+    this.players = new Map(); // socketId -> { name, roomId, rating, stats }
   }
 
   // --- Player Management ---
@@ -15,7 +15,14 @@ export class LobbyManager {
       name,
       roomId: null,
       rating: ELO.START_RATING,
-      stats: { wins: 0, losses: 0, draws: 0, streak: 0, bestStreak: 0, generation: 0 },
+      stats: {
+        wins: 0,
+        losses: 0,
+        draws: 0,
+        streak: 0,
+        bestStreak: 0,
+        generation: 0,
+      },
     });
     return this.players.get(socketId);
   }
@@ -43,8 +50,8 @@ export class LobbyManager {
       id: roomId,
       player1: socketId,
       player2: null,
-      bots: {},          // socketId -> bot config
-      state: 'waiting',  // waiting, building, battling, finished
+      bots: {}, // socketId -> bot config
+      state: "waiting", // waiting, building, battling, finished
       createdAt: Date.now(),
     };
 
@@ -55,16 +62,16 @@ export class LobbyManager {
 
   joinRoom(socketId, roomId) {
     const player = this.players.get(socketId);
-    if (!player) return { error: 'Not registered' };
-    if (player.roomId) return { error: 'Already in a room' };
+    if (!player) return { error: "Not registered" };
+    if (player.roomId) return { error: "Already in a room" };
 
     const room = this.rooms.get(roomId);
-    if (!room) return { error: 'Room not found' };
-    if (room.player2) return { error: 'Room is full' };
-    if (room.player1 === socketId) return { error: 'Already in this room' };
+    if (!room) return { error: "Room not found" };
+    if (room.player2) return { error: "Room is full" };
+    if (room.player1 === socketId) return { error: "Already in this room" };
 
     room.player2 = socketId;
-    room.state = 'building';
+    room.state = "building";
     player.roomId = roomId;
     return { room };
   }
@@ -99,7 +106,7 @@ export class LobbyManager {
     }
 
     // Reset room state
-    room.state = 'waiting';
+    room.state = "waiting";
     room.bots = {};
     return { roomId, room };
   }
@@ -117,11 +124,11 @@ export class LobbyManager {
   getRoomList() {
     const list = [];
     for (const room of this.rooms.values()) {
-      if (room.state === 'waiting') {
+      if (room.state === "waiting") {
         const p1 = this.players.get(room.player1);
         list.push({
           id: room.id,
-          host: p1?.name || 'Unknown',
+          host: p1?.name || "Unknown",
           hostRating: p1?.rating || ELO.START_RATING,
         });
       }
@@ -131,20 +138,23 @@ export class LobbyManager {
 
   submitBot(socketId, botConfig) {
     const room = this.getRoomForPlayer(socketId);
-    if (!room) return { error: 'Not in a room' };
-    if (room.state !== 'building') return { error: 'Not in building phase' };
+    if (!room) return { error: "Not in a room" };
+    if (room.state !== "building") return { error: "Not in building phase" };
 
     room.bots[socketId] = botConfig;
 
-    const bothReady = room.player1 && room.player2 &&
-      room.bots[room.player1] && room.bots[room.player2];
+    const bothReady =
+      room.player1 &&
+      room.player2 &&
+      room.bots[room.player1] &&
+      room.bots[room.player2];
 
     return { submitted: true, bothReady };
   }
 
   _generateRoomId() {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    let id = '';
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    let id = "";
     for (let i = 0; i < 4; i++) {
       id += chars[Math.floor(Math.random() * chars.length)];
     }

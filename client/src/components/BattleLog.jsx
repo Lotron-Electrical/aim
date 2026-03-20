@@ -1,22 +1,26 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from "react";
 
 const MODULE_COLORS = {
-  ATTACK: '#ff0040',
-  DEFENSE: '#00d4ff',
-  TACTICS: '#ffb000',
-  OVERCLOCK: '#00ff41',
-  NONE: '#666',
+  ATTACK: "#ff0040",
+  DEFENSE: "#00d4ff",
+  TACTICS: "#ffb000",
+  OVERCLOCK: "#00ff41",
+  NONE: "#666",
 };
 
 export default function BattleLog({ turns, compact = false }) {
   const bottomRef = useRef(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [turns.length]);
 
   if (!turns || turns.length === 0) {
-    return <div className="font-pixel text-[7px] text-neon-green-dim">Awaiting combat data...</div>;
+    return (
+      <div className="font-pixel text-[7px] text-neon-green-dim">
+        Awaiting combat data...
+      </div>
+    );
   }
 
   return (
@@ -58,17 +62,25 @@ export default function BattleLog({ turns, compact = false }) {
 }
 
 function TurnEntry({ label, action, decisionLog, actionLog, compact }) {
-  const module = action?.split('.')[0] || 'NONE';
+  const module = action?.split(".")[0] || "NONE";
   const color = MODULE_COLORS[module] || MODULE_COLORS.NONE;
 
   return (
     <div className="ml-2 mb-1">
       <span className="font-pixel text-[7px] text-cyan-dim">{label}: </span>
-      <span className="font-pixel text-[7px]" style={{ color }}>{action || 'REST'}</span>
+      <span className="font-pixel text-[7px]" style={{ color }}>
+        {action || "REST"}
+      </span>
 
-      {!compact && decisionLog?.map((line, i) => (
-        <div key={i} className="font-pixel text-[6px] text-neon-green-dim ml-4">{line}</div>
-      ))}
+      {!compact &&
+        decisionLog?.map((line, i) => (
+          <div
+            key={i}
+            className="font-pixel text-[6px] text-neon-green-dim ml-4"
+          >
+            {line}
+          </div>
+        ))}
 
       {actionLog?.map((line, i) => (
         <div key={i} className="font-pixel text-[6px] text-neon-green ml-4">

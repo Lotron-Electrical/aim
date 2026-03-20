@@ -1,17 +1,30 @@
-import React, { useState } from 'react';
-import useStore from '../store.js';
-import { MODULES, MODULE_NAMES, TOTAL_TRAINING_POINTS } from 'shared';
-import TrainingSlider from '../components/TrainingSlider.jsx';
-import NeuralGrid from '../components/NeuralGrid.jsx';
-import BotCard from '../components/BotCard.jsx';
-import BattleLog from '../components/BattleLog.jsx';
-import { SoundManager } from '../audio/SoundManager.js';
+import React, { useState } from "react";
+import useStore from "../store.js";
+import { MODULES, MODULE_NAMES, TOTAL_TRAINING_POINTS } from "shared";
+import TrainingSlider from "../components/TrainingSlider.jsx";
+import NeuralGrid from "../components/NeuralGrid.jsx";
+import BotCard from "../components/BotCard.jsx";
+import BattleLog from "../components/BattleLog.jsx";
+import { SoundManager } from "../audio/SoundManager.js";
 
 export default function BuildScreen() {
   const {
-    roomId, botName, setBotName, modules, setModuleLevel, priorities, setPriorities,
-    getRemainingPoints, submitBot, runSim, simResult, simRunning,
-    opponent, opponentReady, leaveRoom, coreStats,
+    roomId,
+    botName,
+    setBotName,
+    modules,
+    setModuleLevel,
+    priorities,
+    setPriorities,
+    getRemainingPoints,
+    submitBot,
+    runSim,
+    simResult,
+    simRunning,
+    opponent,
+    opponentReady,
+    leaveRoom,
+    coreStats,
   } = useStore();
   const [showSim, setShowSim] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -20,14 +33,14 @@ export default function BuildScreen() {
   const handleSubmit = () => {
     if (remaining !== 0) return;
     if (!botName.trim()) return;
-    SoundManager.play('powerUp');
+    SoundManager.play("powerUp");
     submitBot();
     setSubmitted(true);
   };
 
   const handleSim = () => {
     if (remaining !== 0) return;
-    SoundManager.play('click');
+    SoundManager.play("click");
     runSim();
     setShowSim(true);
   };
@@ -37,13 +50,15 @@ export default function BuildScreen() {
       {/* Header */}
       <div className="flex items-center justify-between mb-4 max-w-4xl mx-auto w-full">
         <div>
-          <h2 className="font-pixel text-sm text-neon-green glow-green">BOT BUILDER</h2>
+          <h2 className="font-pixel text-sm text-neon-green glow-green">
+            BOT BUILDER
+          </h2>
           <p className="font-pixel text-[8px] text-cyan mt-1">Room: {roomId}</p>
         </div>
         <div className="flex items-center gap-3">
           {opponent && (
             <span className="font-pixel text-[8px] text-amber">
-              vs {opponent.name} {opponentReady ? '(READY)' : '(building...)'}
+              vs {opponent.name} {opponentReady ? "(READY)" : "(building...)"}
             </span>
           )}
           <button
@@ -60,7 +75,9 @@ export default function BuildScreen() {
         <div className="space-y-4">
           {/* Bot Name */}
           <div>
-            <label className="font-pixel text-[8px] text-amber block mb-1">BOT DESIGNATION:</label>
+            <label className="font-pixel text-[8px] text-amber block mb-1">
+              BOT DESIGNATION:
+            </label>
             <input
               type="text"
               value={botName}
@@ -77,8 +94,12 @@ export default function BuildScreen() {
           {/* Training Points */}
           <div className="border border-neon-green-dim p-3 bg-bg-panel">
             <div className="flex justify-between items-center mb-3">
-              <span className="font-pixel text-[8px] text-neon-green">TRAINING POINTS</span>
-              <span className={`font-pixel text-sm ${remaining === 0 ? 'text-neon-green glow-green' : 'text-red glow-red'}`}>
+              <span className="font-pixel text-[8px] text-neon-green">
+                TRAINING POINTS
+              </span>
+              <span
+                className={`font-pixel text-sm ${remaining === 0 ? "text-neon-green glow-green" : "text-red glow-red"}`}
+              >
                 {remaining}
               </span>
             </div>
@@ -98,12 +119,17 @@ export default function BuildScreen() {
 
           {/* Priority Reordering */}
           {MODULE_NAMES.map((mod) => {
-            const available = MODULES[mod].behaviors.filter((b) => b.level <= modules[mod] && !b.passive);
+            const available = MODULES[mod].behaviors.filter(
+              (b) => b.level <= modules[mod] && !b.passive,
+            );
             if (available.length === 0) return null;
 
             return (
               <div key={mod} className="border border-bg-panel p-2 bg-bg">
-                <span className="font-pixel text-[8px] block mb-1" style={{ color: MODULES[mod].color }}>
+                <span
+                  className="font-pixel text-[8px] block mb-1"
+                  style={{ color: MODULES[mod].color }}
+                >
                   {mod} PRIORITIES:
                 </span>
                 <div className="space-y-1">
@@ -116,18 +142,25 @@ export default function BuildScreen() {
                         disabled={submitted}
                         onClick={() => {
                           // Toggle priority: move to front or remove
-                          const current = priorities[mod].filter((n) => n !== b.name);
+                          const current = priorities[mod].filter(
+                            (n) => n !== b.name,
+                          );
                           current.unshift(b.name);
                           setPriorities(mod, current);
-                          SoundManager.play('click');
+                          SoundManager.play("click");
                         }}
                         className={`w-full text-left font-pixel text-[7px] px-2 py-1 border transition-colors
-                          ${isFirst ? 'border-neon-green bg-bg-panel text-neon-green' : 'border-bg-panel text-neon-green-dim hover:border-neon-green-dim'}
+                          ${isFirst ? "border-neon-green bg-bg-panel text-neon-green" : "border-bg-panel text-neon-green-dim hover:border-neon-green-dim"}
                           disabled:cursor-not-allowed`}
                       >
                         <span className="text-amber-dim mr-1">[{b.level}]</span>
-                        {b.name} <span className="text-cyan-dim ml-1">({b.energyCost}E)</span>
-                        {isFirst && <span className="float-right text-amber">*TOP*</span>}
+                        {b.name}{" "}
+                        <span className="text-cyan-dim ml-1">
+                          ({b.energyCost}E)
+                        </span>
+                        {isFirst && (
+                          <span className="float-right text-amber">*TOP*</span>
+                        )}
                       </button>
                     );
                   })}
@@ -145,7 +178,7 @@ export default function BuildScreen() {
                          hover:bg-cyan hover:text-bg transition-colors
                          disabled:opacity-30 disabled:cursor-not-allowed"
             >
-              {simRunning ? 'SIMULATING...' : '[ TEST SIM ]'}
+              {simRunning ? "SIMULATING..." : "[ TEST SIM ]"}
             </button>
             <button
               onClick={handleSubmit}
@@ -154,7 +187,7 @@ export default function BuildScreen() {
                          hover:bg-neon-green hover:text-bg transition-colors
                          disabled:opacity-30 disabled:cursor-not-allowed"
             >
-              {submitted ? 'LOCKED IN' : '[ SUBMIT BOT ]'}
+              {submitted ? "LOCKED IN" : "[ SUBMIT BOT ]"}
             </button>
           </div>
         </div>
@@ -162,13 +195,23 @@ export default function BuildScreen() {
         {/* Right: Visualization */}
         <div className="space-y-4">
           <NeuralGrid modules={modules} />
-          {coreStats && <BotCard name={botName || 'UNNAMED'} modules={modules} coreStats={coreStats} />}
+          {coreStats && (
+            <BotCard
+              name={botName || "UNNAMED"}
+              modules={modules}
+              coreStats={coreStats}
+            />
+          )}
           {showSim && simResult && (
             <div className="border border-cyan-dim p-3 bg-bg max-h-64 overflow-y-auto">
-              <h3 className="font-pixel text-[8px] text-cyan mb-2">TRAINING SIM RESULTS</h3>
+              <h3 className="font-pixel text-[8px] text-cyan mb-2">
+                TRAINING SIM RESULTS
+              </h3>
               <p className="font-pixel text-[8px] text-amber mb-2">
-                {simResult.turns.length} turns --
-                Winner: {simResult.turns[simResult.turns.length - 1]?.winner === 'bot1' ? 'YOUR BOT' : 'SPARRING UNIT'}
+                {simResult.turns.length} turns -- Winner:{" "}
+                {simResult.turns[simResult.turns.length - 1]?.winner === "bot1"
+                  ? "YOUR BOT"
+                  : "SPARRING UNIT"}
               </p>
               <BattleLog turns={simResult.turns} compact />
             </div>

@@ -1,22 +1,40 @@
 // ============================================================
 // AIm — Socket Handler
 // ============================================================
-import { EVENTS, validateBotConfig, generateCoreStats, runFullBattle, DUMMY_BOT } from 'shared';
-import { GameManager } from '../game/GameManager.js';
+import {
+  EVENTS,
+  validateBotConfig,
+  generateCoreStats,
+  runFullBattle,
+  DUMMY_BOT,
+} from "shared";
+import { GameManager } from "../game/GameManager.js";
 
 export function setupSocketHandlers(io, lobby) {
   const gameManager = new GameManager(io, lobby);
 
-  io.on('connection', (socket) => {
+  io.on("connection", (socket) => {
     console.log(`[Connect] ${socket.id}`);
 
     // --- Player Registration ---
     socket.on(EVENTS.PLAYER_INFO, ({ name }, cb) => {
-      if (!name || typeof name !== 'string' || name.trim().length < 1 || name.trim().length > 20) {
-        return cb?.({ error: 'Name must be 1-20 characters' });
+      if (
+        !name ||
+        typeof name !== "string" ||
+        name.trim().length < 1 ||
+        name.trim().length > 20
+      ) {
+        return cb?.({ error: "Name must be 1-20 characters" });
       }
       const player = lobby.registerPlayer(socket.id, name.trim());
-      cb?.({ success: true, player: { name: player.name, rating: player.rating, stats: player.stats } });
+      cb?.({
+        success: true,
+        player: {
+          name: player.name,
+          rating: player.rating,
+          stats: player.stats,
+        },
+      });
 
       // Send room list
       socket.emit(EVENTS.ROOM_LIST, lobby.getRoomList());
@@ -25,7 +43,7 @@ export function setupSocketHandlers(io, lobby) {
     // --- Room Management ---
     socket.on(EVENTS.CREATE_ROOM, (_, cb) => {
       const room = lobby.createRoom(socket.id);
-      if (!room) return cb?.({ error: 'Could not create room' });
+      if (!room) return cb?.({ error: "Could not create room" });
 
       socket.join(room.id);
       cb?.({ roomId: room.id });
@@ -110,13 +128,13 @@ export function setupSocketHandlers(io, lobby) {
 
       io.to(room.id).emit(EVENTS.CHAT_MESSAGE, {
         name: player.name,
-        message: message?.slice(0, 200) || '',
+        message: message?.slice(0, 200) || "",
         timestamp: Date.now(),
       });
     });
 
     // --- Disconnect ---
-    socket.on('disconnect', () => {
+    socket.on("disconnect", () => {
       console.log(`[Disconnect] ${socket.id}`);
       handleLeaveRoom(socket);
       lobby.removePlayer(socket.id);
@@ -138,10 +156,12 @@ export function setupSocketHandlers(io, lobby) {
         io.to(roomId).emit(EVENTS.ROOM_UPDATE, {
           roomId,
           state: result.room.state,
-          player1: lobby.getPlayer(result.room.player1) ? {
-            name: lobby.getPlayer(result.room.player1).name,
-            rating: lobby.getPlayer(result.room.player1).rating,
-          } : null,
+          player1: lobby.getPlayer(result.room.player1)
+            ? {
+                name: lobby.getPlayer(result.room.player1).name,
+                rating: lobby.getPlayer(result.room.player1).rating,
+              }
+            : null,
           player2: null,
         });
         io.emit(EVENTS.ROOM_LIST, lobby.getRoomList());

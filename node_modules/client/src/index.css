@@ -64,17 +64,43 @@ body {
 }
 
 /* Neon glow effect */
-.glow-green { text-shadow: 0 0 10px var(--color-neon-green), 0 0 20px var(--color-neon-green); }
-.glow-amber { text-shadow: 0 0 10px var(--color-amber), 0 0 20px var(--color-amber); }
-.glow-cyan  { text-shadow: 0 0 10px var(--color-cyan), 0 0 20px var(--color-cyan); }
-.glow-red   { text-shadow: 0 0 10px var(--color-red), 0 0 20px var(--color-red); }
+.glow-green {
+  text-shadow:
+    0 0 10px var(--color-neon-green),
+    0 0 20px var(--color-neon-green);
+}
+.glow-amber {
+  text-shadow:
+    0 0 10px var(--color-amber),
+    0 0 20px var(--color-amber);
+}
+.glow-cyan {
+  text-shadow:
+    0 0 10px var(--color-cyan),
+    0 0 20px var(--color-cyan);
+}
+.glow-red {
+  text-shadow:
+    0 0 10px var(--color-red),
+    0 0 20px var(--color-red);
+}
 
 /* Flicker animation */
 @keyframes flicker {
-  0%, 95%, 100% { opacity: 1; }
-  96% { opacity: 0.8; }
-  97% { opacity: 1; }
-  98% { opacity: 0.9; }
+  0%,
+  95%,
+  100% {
+    opacity: 1;
+  }
+  96% {
+    opacity: 0.8;
+  }
+  97% {
+    opacity: 1;
+  }
+  98% {
+    opacity: 0.9;
+  }
 }
 
 .crt-flicker {
@@ -83,14 +109,23 @@ body {
 
 /* Boot-up text animation */
 @keyframes typeIn {
-  from { width: 0; }
-  to { width: 100%; }
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
 }
 
 /* Pulse animation for active elements */
 @keyframes pulse-glow {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
 .pulse-glow {
@@ -99,9 +134,16 @@ body {
 
 /* Battle shake */
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-4px); }
-  75% { transform: translateX(4px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
 }
 
 .shake {

@@ -1,7 +1,7 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import tailwindcss from '@tailwindcss/vite';
-import path from 'path';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+import path from "path";
 
 export default defineConfig({
   root: path.resolve(import.meta.dirname),
@@ -9,12 +9,12 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/socket.io': {
-        target: 'http://localhost:3001',
+      "/socket.io": {
+        target: "http://localhost:4000",
         ws: true,
       },
-      '/api': {
-        target: 'http://localhost:3001',
+      "/api": {
+        target: "http://localhost:4000",
       },
     },
   },

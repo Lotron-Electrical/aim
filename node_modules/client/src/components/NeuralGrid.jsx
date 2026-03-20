@@ -1,12 +1,12 @@
-import React, { useRef, useEffect } from 'react';
-import { MODULES, MODULE_NAMES } from 'shared';
+import React, { useRef, useEffect } from "react";
+import { MODULES, MODULE_NAMES } from "shared";
 
 const NODE_RADIUS = 6;
 const COLORS = {
-  ATTACK: '#ff0040',
-  DEFENSE: '#00d4ff',
-  TACTICS: '#ffb000',
-  OVERCLOCK: '#00ff41',
+  ATTACK: "#ff0040",
+  DEFENSE: "#00d4ff",
+  TACTICS: "#ffb000",
+  OVERCLOCK: "#00ff41",
 };
 
 export default function NeuralGrid({ modules }) {
@@ -15,14 +15,14 @@ export default function NeuralGrid({ modules }) {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     const w = canvas.width;
     const h = canvas.height;
 
     ctx.clearRect(0, 0, w, h);
 
     // Draw background grid
-    ctx.strokeStyle = '#1a1a3a';
+    ctx.strokeStyle = "#1a1a3a";
     ctx.lineWidth = 0.5;
     for (let x = 0; x < w; x += 20) {
       ctx.beginPath();
@@ -43,9 +43,9 @@ export default function NeuralGrid({ modules }) {
 
     // Module positions (4 corners)
     const positions = {
-      ATTACK:    { x: w * 0.2, y: h * 0.25 },
-      DEFENSE:   { x: w * 0.8, y: h * 0.25 },
-      TACTICS:   { x: w * 0.2, y: h * 0.75 },
+      ATTACK: { x: w * 0.2, y: h * 0.25 },
+      DEFENSE: { x: w * 0.8, y: h * 0.25 },
+      TACTICS: { x: w * 0.2, y: h * 0.75 },
       OVERCLOCK: { x: w * 0.8, y: h * 0.75 },
     };
 
@@ -70,7 +70,7 @@ export default function NeuralGrid({ modules }) {
       // Data flow particles along the line
       const time = Date.now() / 1000;
       for (let i = 0; i < level; i++) {
-        const t = ((time * 0.5 + i * 0.2) % 1);
+        const t = (time * 0.5 + i * 0.2) % 1;
         const px = cx + (pos.x - cx) * t;
         const py = cy + (pos.y - cy) * t;
         ctx.globalAlpha = 0.8;
@@ -94,10 +94,10 @@ export default function NeuralGrid({ modules }) {
       ctx.shadowBlur = 0;
 
       // Level text
-      ctx.fillStyle = '#0a0a1a';
+      ctx.fillStyle = "#0a0a1a";
       ctx.font = '8px "Press Start 2P"';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
       ctx.fillText(level.toString(), pos.x, pos.y);
 
       // Label
@@ -108,20 +108,19 @@ export default function NeuralGrid({ modules }) {
 
     // Core node
     ctx.globalAlpha = 1;
-    ctx.shadowColor = '#00ff41';
+    ctx.shadowColor = "#00ff41";
     ctx.shadowBlur = 15;
-    ctx.fillStyle = '#00ff41';
+    ctx.fillStyle = "#00ff41";
     ctx.beginPath();
     ctx.arc(cx, cy, NODE_RADIUS + 3, 0, Math.PI * 2);
     ctx.fill();
     ctx.shadowBlur = 0;
 
-    ctx.fillStyle = '#0a0a1a';
+    ctx.fillStyle = "#0a0a1a";
     ctx.font = '5px "Press Start 2P"';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('AI', cx, cy);
-
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("AI", cx, cy);
   }, [modules]);
 
   // Animate
@@ -131,7 +130,7 @@ export default function NeuralGrid({ modules }) {
       const canvas = canvasRef.current;
       if (canvas) {
         // Trigger re-render by re-running the draw
-        const event = new Event('redraw');
+        const event = new Event("redraw");
         canvas.dispatchEvent(event);
       }
       frame = requestAnimationFrame(animate);
@@ -142,13 +141,15 @@ export default function NeuralGrid({ modules }) {
 
   return (
     <div className="border border-neon-green-dim bg-bg p-2">
-      <h3 className="font-pixel text-[8px] text-neon-green mb-2">NEURAL NETWORK</h3>
+      <h3 className="font-pixel text-[8px] text-neon-green mb-2">
+        NEURAL NETWORK
+      </h3>
       <canvas
         ref={canvasRef}
         width={300}
         height={200}
         className="w-full bg-bg"
-        style={{ imageRendering: 'pixelated' }}
+        style={{ imageRendering: "pixelated" }}
       />
     </div>
   );

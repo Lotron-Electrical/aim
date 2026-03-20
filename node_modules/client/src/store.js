@@ -1,15 +1,15 @@
-import { create } from 'zustand';
-import { socket } from './socket.js';
-import { EVENTS, MODULES, TOTAL_TRAINING_POINTS, MODULE_NAMES } from 'shared';
+import { create } from "zustand";
+import { socket } from "./socket.js";
+import { EVENTS, MODULES, TOTAL_TRAINING_POINTS, MODULE_NAMES } from "shared";
 
 const useStore = create((set, get) => ({
   // --- Connection ---
   connected: false,
-  playerName: '',
+  playerName: "",
   player: null,
 
   // --- Navigation ---
-  screen: 'title', // title, lobby, build, battle, result
+  screen: "title", // title, lobby, build, battle, result
 
   // --- Lobby ---
   roomId: null,
@@ -19,7 +19,7 @@ const useStore = create((set, get) => ({
   opponentReady: false,
 
   // --- Bot Building ---
-  botName: '',
+  botName: "",
   modules: { ATTACK: 3, DEFENSE: 3, TACTICS: 3, OVERCLOCK: 3 },
   priorities: {
     ATTACK: [],
@@ -52,37 +52,55 @@ const useStore = create((set, get) => ({
 
     socket.emit(EVENTS.PLAYER_INFO, { name }, (res) => {
       if (res.error) return console.error(res.error);
-      set({ player: res.player, connected: true, screen: 'lobby' });
+      set({ player: res.player, connected: true, screen: "lobby" });
     });
   },
 
   disconnect: () => {
     socket.disconnect();
-    set({ connected: false, screen: 'title', player: null, roomId: null });
+    set({ connected: false, screen: "title", player: null, roomId: null });
   },
 
   // --- Lobby ---
   createRoom: () => {
     socket.emit(EVENTS.CREATE_ROOM, {}, (res) => {
       if (res.error) return console.error(res.error);
-      set({ roomId: res.roomId, screen: 'build', roomState: 'waiting', opponentReady: false });
+      set({
+        roomId: res.roomId,
+        screen: "build",
+        roomState: "waiting",
+        opponentReady: false,
+      });
     });
   },
 
   joinRoom: (roomId) => {
     socket.emit(EVENTS.JOIN_ROOM, { roomId }, (res) => {
       if (res.error) return console.error(res.error);
-      set({ roomId, screen: 'build', roomState: 'building', opponentReady: false });
+      set({
+        roomId,
+        screen: "build",
+        roomState: "building",
+        opponentReady: false,
+      });
     });
   },
 
   leaveRoom: () => {
     socket.emit(EVENTS.LEAVE_ROOM);
     set({
-      roomId: null, screen: 'lobby', roomState: null, opponent: null,
-      opponentReady: false, battleState: null, turnResults: [], battleEnd: null,
-      botName: '', modules: { ATTACK: 3, DEFENSE: 3, TACTICS: 3, OVERCLOCK: 3 },
-      coreStats: null, simResult: null,
+      roomId: null,
+      screen: "lobby",
+      roomState: null,
+      opponent: null,
+      opponentReady: false,
+      battleState: null,
+      turnResults: [],
+      battleEnd: null,
+      botName: "",
+      modules: { ATTACK: 3, DEFENSE: 3, TACTICS: 3, OVERCLOCK: 3 },
+      coreStats: null,
+      simResult: null,
     });
   },
 
@@ -103,7 +121,9 @@ const useStore = create((set, get) => ({
 
   getRemainingPoints: () => {
     const { modules } = get();
-    return TOTAL_TRAINING_POINTS - Object.values(modules).reduce((a, b) => a + b, 0);
+    return (
+      TOTAL_TRAINING_POINTS - Object.values(modules).reduce((a, b) => a + b, 0)
+    );
   },
 
   setPriorities: (module, ordered) => {
@@ -113,7 +133,7 @@ const useStore = create((set, get) => ({
   submitBot: () => {
     const { botName, modules, priorities, coreStats } = get();
     const config = {
-      name: botName || 'UNNAMED-BOT',
+      name: botName || "UNNAMED-BOT",
       modules,
       priorities,
       coreStats: coreStats || undefined,
@@ -131,7 +151,7 @@ const useStore = create((set, get) => ({
     set({ simRunning: true, simResult: null });
 
     const config = {
-      name: botName || 'UNNAMED-BOT',
+      name: botName || "UNNAMED-BOT",
       modules,
       priorities,
       coreStats: coreStats || undefined,
@@ -142,7 +162,11 @@ const useStore = create((set, get) => ({
         set({ simRunning: false });
         return console.error(res.error);
       }
-      set({ simResult: res.result, simRunning: false, coreStats: res.coreStats });
+      set({
+        simResult: res.result,
+        simRunning: false,
+        coreStats: res.coreStats,
+      });
     });
   },
 
@@ -150,10 +174,14 @@ const useStore = create((set, get) => ({
   returnToLobby: () => {
     const { roomId } = get();
     set({
-      screen: roomId ? 'build' : 'lobby',
-      battleState: null, turnResults: [], battleEnd: null,
-      opponentReady: false, simResult: null,
-      botName: '', modules: { ATTACK: 3, DEFENSE: 3, TACTICS: 3, OVERCLOCK: 3 },
+      screen: roomId ? "build" : "lobby",
+      battleState: null,
+      turnResults: [],
+      battleEnd: null,
+      opponentReady: false,
+      simResult: null,
+      botName: "",
+      modules: { ATTACK: 3, DEFENSE: 3, TACTICS: 3, OVERCLOCK: 3 },
       coreStats: null,
     });
   },
@@ -163,8 +191,8 @@ const useStore = create((set, get) => ({
 }));
 
 // ======== Socket Listeners ========
-socket.on('connect', () => useStore.setState({ connected: true }));
-socket.on('disconnect', () => useStore.setState({ connected: false }));
+socket.on("connect", () => useStore.setState({ connected: true }));
+socket.on("disconnect", () => useStore.setState({ connected: false }));
 
 socket.on(EVENTS.ROOM_LIST, (list) => {
   useStore.setState({ roomList: list });
@@ -182,9 +210,9 @@ socket.on(EVENTS.ROOM_UPDATE, (data) => {
     update.opponent = data.player2;
   }
 
-  if (data.state === 'building' && state.screen === 'build') {
+  if (data.state === "building" && state.screen === "build") {
     // Stay on build screen
-  } else if (data.state === 'waiting') {
+  } else if (data.state === "waiting") {
     update.opponent = null;
     update.opponentReady = false;
   }
@@ -204,31 +232,39 @@ socket.on(EVENTS.BOTH_READY, () => {
 });
 
 socket.on(EVENTS.ROOM_ERROR, ({ message }) => {
-  console.error('Room error:', message);
+  console.error("Room error:", message);
 });
 
-socket.on('battle_start', (data) => {
+socket.on("battle_start", (data) => {
   useStore.setState({
-    screen: 'battle',
+    screen: "battle",
     battleState: data,
     turnResults: [],
     battleEnd: null,
   });
 });
 
-socket.on('turn_result', (data) => {
+socket.on("turn_result", (data) => {
   useStore.setState((state) => ({
     turnResults: [...state.turnResults, data],
     battleState: {
       ...state.battleState,
-      bot1: { ...state.battleState.bot1, hp: data.bot1State.hp, energy: data.bot1State.energy },
-      bot2: { ...state.battleState.bot2, hp: data.bot2State.hp, energy: data.bot2State.energy },
+      bot1: {
+        ...state.battleState.bot1,
+        hp: data.bot1State.hp,
+        energy: data.bot1State.energy,
+      },
+      bot2: {
+        ...state.battleState.bot2,
+        hp: data.bot2State.hp,
+        energy: data.bot2State.energy,
+      },
     },
   }));
 });
 
-socket.on('battle_end', (data) => {
-  useStore.setState({ battleEnd: data, screen: 'result' });
+socket.on("battle_end", (data) => {
+  useStore.setState({ battleEnd: data, screen: "result" });
 });
 
 export default useStore;

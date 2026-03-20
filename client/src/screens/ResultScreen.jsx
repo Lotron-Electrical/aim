@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import useStore from '../store.js';
-import { SoundManager } from '../audio/SoundManager.js';
+import React, { useEffect } from "react";
+import useStore from "../store.js";
+import { SoundManager } from "../audio/SoundManager.js";
 
 export default function ResultScreen() {
   const { battleEnd, playerName, returnToLobby, leaveRoom } = useStore();
@@ -9,8 +9,10 @@ export default function ResultScreen() {
     if (!battleEnd) return;
     const myName = playerName;
     const iAmP1 = battleEnd.player1.name === myName;
-    const iWon = (battleEnd.winner === 'bot1' && iAmP1) || (battleEnd.winner === 'bot2' && !iAmP1);
-    SoundManager.play(iWon ? 'win' : 'lose');
+    const iWon =
+      (battleEnd.winner === "bot1" && iAmP1) ||
+      (battleEnd.winner === "bot2" && !iAmP1);
+    SoundManager.play(iWon ? "win" : "lose");
   }, [battleEnd]);
 
   if (!battleEnd) return null;
@@ -19,18 +21,18 @@ export default function ResultScreen() {
   const iAmP1 = player1.name === playerName;
   const me = iAmP1 ? player1 : player2;
   const them = iAmP1 ? player2 : player1;
-  const iWon = (winner === 'bot1' && iAmP1) || (winner === 'bot2' && !iAmP1);
+  const iWon = (winner === "bot1" && iAmP1) || (winner === "bot2" && !iAmP1);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
       {/* Winner announcement */}
       <div className="text-center mb-8">
-        <h1 className={`font-pixel text-3xl sm:text-5xl mb-4 ${iWon ? 'text-neon-green glow-green' : 'text-red glow-red'}`}>
-          {iWon ? 'VICTORY' : 'DEFEATED'}
+        <h1
+          className={`font-pixel text-3xl sm:text-5xl mb-4 ${iWon ? "text-neon-green glow-green" : "text-red glow-red"}`}
+        >
+          {iWon ? "VICTORY" : "DEFEATED"}
         </h1>
-        <p className="font-pixel text-[10px] text-amber">
-          {endReason}
-        </p>
+        <p className="font-pixel text-[10px] text-amber">{endReason}</p>
       </div>
 
       {/* Stats */}
@@ -48,14 +50,20 @@ export default function ResultScreen() {
       {/* Actions */}
       <div className="flex gap-4">
         <button
-          onClick={() => { SoundManager.play('click'); returnToLobby(); }}
+          onClick={() => {
+            SoundManager.play("click");
+            returnToLobby();
+          }}
           className="font-pixel text-[10px] border-2 border-neon-green text-neon-green
                      px-6 py-3 hover:bg-neon-green hover:text-bg transition-colors"
         >
           [ REBUILD ]
         </button>
         <button
-          onClick={() => { SoundManager.play('click'); leaveRoom(); }}
+          onClick={() => {
+            SoundManager.play("click");
+            leaveRoom();
+          }}
           className="font-pixel text-[10px] border border-red text-red
                      px-6 py-3 hover:bg-red hover:text-bg transition-colors"
         >
@@ -73,8 +81,9 @@ function StatRow({ label, value, delta }) {
       <div className="flex items-center gap-2">
         <span className="text-neon-green">{value}</span>
         {delta !== undefined && (
-          <span className={`${delta >= 0 ? 'text-neon-green' : 'text-red'}`}>
-            ({delta >= 0 ? '+' : ''}{delta})
+          <span className={`${delta >= 0 ? "text-neon-green" : "text-red"}`}>
+            ({delta >= 0 ? "+" : ""}
+            {delta})
           </span>
         )}
       </div>

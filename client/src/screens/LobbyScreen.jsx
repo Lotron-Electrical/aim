@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
-import useStore from '../store.js';
-import { SoundManager } from '../audio/SoundManager.js';
+import React, { useState } from "react";
+import useStore from "../store.js";
+import { SoundManager } from "../audio/SoundManager.js";
 
 export default function LobbyScreen() {
-  const { playerName, player, roomList, createRoom, joinRoom, disconnect } = useStore();
-  const [joinCode, setJoinCode] = useState('');
+  const { playerName, player, roomList, createRoom, joinRoom, disconnect } =
+    useStore();
+  const [joinCode, setJoinCode] = useState("");
 
   const handleCreate = () => {
-    SoundManager.play('click');
+    SoundManager.play("click");
     createRoom();
   };
 
   const handleJoin = (roomId) => {
-    SoundManager.play('click');
+    SoundManager.play("click");
     joinRoom(roomId);
   };
 
@@ -28,7 +29,9 @@ export default function LobbyScreen() {
       {/* Header */}
       <div className="flex items-center justify-between w-full max-w-lg mb-8">
         <div>
-          <h2 className="font-pixel text-lg text-neon-green glow-green">LOBBY</h2>
+          <h2 className="font-pixel text-lg text-neon-green glow-green">
+            LOBBY
+          </h2>
           <p className="font-pixel text-[8px] text-amber mt-1">
             {playerName} // ELO: {player?.rating || 1000}
           </p>
@@ -55,7 +58,9 @@ export default function LobbyScreen() {
           <input
             type="text"
             value={joinCode}
-            onChange={(e) => setJoinCode(e.target.value.toUpperCase().slice(0, 4))}
+            onChange={(e) =>
+              setJoinCode(e.target.value.toUpperCase().slice(0, 4))
+            }
             placeholder="ROOM CODE"
             maxLength={4}
             className="flex-1 font-pixel text-[10px] bg-bg border border-cyan-dim text-cyan
