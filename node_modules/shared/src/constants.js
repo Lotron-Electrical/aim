@@ -10,6 +10,7 @@ export const EVENTS = {
 
   // Lobby
   CREATE_ROOM: "create_room",
+  CREATE_AI_ROOM: "create_ai_room",
   JOIN_ROOM: "join_room",
   LEAVE_ROOM: "leave_room",
   ROOM_UPDATE: "room_update",
@@ -286,6 +287,13 @@ export const ELEMENT_MULTIPLIER = {
   weak: 0.5,
   neutral: 1.0,
 };
+
+// --- AI Bot Names (for VS AI mode) ---
+export const AI_BOT_NAMES = [
+  "NEURON-7", "AXIOM-X", "CIPHER-9", "FLUX-3",
+  "PRISM-4", "VECTOR-1", "HELIX-6", "BINARY-8",
+  "ROGUE-5", "NEXUS-2", "DAEMON-0", "SPARK-11",
+];
 
 // --- Dummy Bot for Training Sims ---
 export const DUMMY_BOT = {

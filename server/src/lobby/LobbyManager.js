@@ -60,6 +60,27 @@ export class LobbyManager {
     return room;
   }
 
+  createAIRoom(socketId) {
+    const player = this.players.get(socketId);
+    if (!player) return null;
+    if (player.roomId) return null;
+
+    const roomId = this._generateRoomId();
+    const room = {
+      id: roomId,
+      player1: socketId,
+      player2: "AI",
+      bots: {},
+      state: "building",
+      createdAt: Date.now(),
+      vsAI: true,
+    };
+
+    this.rooms.set(roomId, room);
+    player.roomId = roomId;
+    return room;
+  }
+
   joinRoom(socketId, roomId) {
     const player = this.players.get(socketId);
     if (!player) return { error: "Not registered" };
@@ -87,6 +108,14 @@ export class LobbyManager {
     }
 
     const roomId = room.id;
+
+    // AI rooms: just delete when human leaves
+    if (room.vsAI) {
+      delete room.bots[socketId];
+      player.roomId = null;
+      this.rooms.delete(roomId);
+      return { roomId, deleted: true };
+    }
 
     // Remove player from room
     if (room.player1 === socketId) {
@@ -142,6 +171,11 @@ export class LobbyManager {
     if (room.state !== "building") return { error: "Not in building phase" };
 
     room.bots[socketId] = botConfig;
+
+    // For AI rooms, only need player1's bot
+    if (room.vsAI) {
+      return { submitted: true, bothReady: !!room.bots[room.player1] };
+    }
 
     const bothReady =
       room.player1 &&

@@ -39,7 +39,7 @@ export class GameManager {
 
     // Emit battle start
     const p1 = this.lobby.getPlayer(room.player1);
-    const p2 = this.lobby.getPlayer(room.player2);
+    const p2 = room.vsAI ? null : this.lobby.getPlayer(room.player2);
     this.io.to(roomId).emit("battle_start", {
       bot1: {
         name: bot1.name,
@@ -60,7 +60,8 @@ export class GameManager {
         modules: bot2.modules,
       },
       player1Name: p1?.name,
-      player2Name: p2?.name,
+      player2Name: room.vsAI ? bot2.name : p2?.name,
+      vsAI: room.vsAI || false,
     });
 
     // Start turn loop
@@ -145,60 +146,90 @@ export class GameManager {
 
     const room = this.lobby.getRoom(roomId);
     const p1 = this.lobby.getPlayer(battle.player1);
-    const p2 = this.lobby.getPlayer(battle.player2);
+    const isAI = room?.vsAI;
 
-    if (p1 && p2) {
+    if (isAI && p1) {
+      // AI match: no ELO changes, just emit result
       const winnerIsP1 = lastTurn.winner === "bot1";
-      const scoreA = winnerIsP1 ? 1 : 0;
-      const { newRatingA, newRatingB } = calculateElo(
-        p1.rating,
-        p2.rating,
-        scoreA,
-      );
-
-      const p1Delta = newRatingA - p1.rating;
-      const p2Delta = newRatingB - p2.rating;
-
-      p1.rating = newRatingA;
-      p2.rating = newRatingB;
-
-      if (winnerIsP1) {
-        p1.stats.wins++;
-        p1.stats.streak++;
-        p1.stats.bestStreak = Math.max(p1.stats.bestStreak, p1.stats.streak);
-        p2.stats.losses++;
-        p2.stats.streak = 0;
-      } else {
-        p2.stats.wins++;
-        p2.stats.streak++;
-        p2.stats.bestStreak = Math.max(p2.stats.bestStreak, p2.stats.streak);
-        p1.stats.losses++;
-        p1.stats.streak = 0;
-      }
-
       p1.stats.generation++;
-      p2.stats.generation++;
 
       this.io.to(roomId).emit("battle_end", {
         winner: lastTurn.winner,
         endReason: lastTurn.endReason,
+        vsAI: true,
         player1: {
           name: p1.name,
           rating: p1.rating,
-          delta: p1Delta,
+          delta: 0,
           stats: p1.stats,
         },
         player2: {
-          name: p2.name,
-          rating: p2.rating,
-          delta: p2Delta,
-          stats: p2.stats,
+          name: battle.bot2.name,
+          rating: "---",
+          delta: 0,
+          stats: null,
         },
         finalHp: {
           bot1: { hp: battle.bot1.hp, maxHp: battle.bot1.maxHp },
           bot2: { hp: battle.bot2.hp, maxHp: battle.bot2.maxHp },
         },
       });
+    } else {
+      const p2 = this.lobby.getPlayer(battle.player2);
+
+      if (p1 && p2) {
+        const winnerIsP1 = lastTurn.winner === "bot1";
+        const scoreA = winnerIsP1 ? 1 : 0;
+        const { newRatingA, newRatingB } = calculateElo(
+          p1.rating,
+          p2.rating,
+          scoreA,
+        );
+
+        const p1Delta = newRatingA - p1.rating;
+        const p2Delta = newRatingB - p2.rating;
+
+        p1.rating = newRatingA;
+        p2.rating = newRatingB;
+
+        if (winnerIsP1) {
+          p1.stats.wins++;
+          p1.stats.streak++;
+          p1.stats.bestStreak = Math.max(p1.stats.bestStreak, p1.stats.streak);
+          p2.stats.losses++;
+          p2.stats.streak = 0;
+        } else {
+          p2.stats.wins++;
+          p2.stats.streak++;
+          p2.stats.bestStreak = Math.max(p2.stats.bestStreak, p2.stats.streak);
+          p1.stats.losses++;
+          p1.stats.streak = 0;
+        }
+
+        p1.stats.generation++;
+        p2.stats.generation++;
+
+        this.io.to(roomId).emit("battle_end", {
+          winner: lastTurn.winner,
+          endReason: lastTurn.endReason,
+          player1: {
+            name: p1.name,
+            rating: p1.rating,
+            delta: p1Delta,
+            stats: p1.stats,
+          },
+          player2: {
+            name: p2.name,
+            rating: p2.rating,
+            delta: p2Delta,
+            stats: p2.stats,
+          },
+          finalHp: {
+            bot1: { hp: battle.bot1.hp, maxHp: battle.bot1.maxHp },
+            bot2: { hp: battle.bot2.hp, maxHp: battle.bot2.maxHp },
+          },
+        });
+      }
     }
 
     if (room) room.state = "building";

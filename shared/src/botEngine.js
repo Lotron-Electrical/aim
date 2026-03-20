@@ -400,9 +400,13 @@ function executeAction(
     attackerResult.damage = totalDamage;
 
     if (elMult > 1) {
-      attackerResult.log.push(`Super-effective! (${attacker.element} > ${defender.element})`);
+      attackerResult.log.push(
+        `Super-effective! (${attacker.element} > ${defender.element})`,
+      );
     } else if (elMult < 1) {
-      attackerResult.log.push(`Resisted... (${attacker.element} < ${defender.element})`);
+      attackerResult.log.push(
+        `Resisted... (${attacker.element} < ${defender.element})`,
+      );
     }
 
     // Counter-attack
@@ -535,7 +539,10 @@ function executeAction(
     } else if (b.name === "Singularity") {
       const hit = Math.random() < b.accuracy;
       if (hit) {
-        let damage = Math.round(b.baseDamage * getElementMultiplier(attacker.element, defender.element));
+        let damage = Math.round(
+          b.baseDamage *
+            getElementMultiplier(attacker.element, defender.element),
+        );
         if (defender.shieldActive) {
           const reduced = Math.round(damage * defender.shieldReduction);
           damage -= reduced;
@@ -544,9 +551,18 @@ function executeAction(
         defender.hp -= damage;
         attackerResult.damage = damage;
         attackerResult.log.push(`Singularity: CONNECTED! ${damage} damage!`);
-        const singElMult = getElementMultiplier(attacker.element, defender.element);
-        if (singElMult > 1) attackerResult.log.push(`Super-effective! (${attacker.element} > ${defender.element})`);
-        else if (singElMult < 1) attackerResult.log.push(`Resisted... (${attacker.element} < ${defender.element})`);
+        const singElMult = getElementMultiplier(
+          attacker.element,
+          defender.element,
+        );
+        if (singElMult > 1)
+          attackerResult.log.push(
+            `Super-effective! (${attacker.element} > ${defender.element})`,
+          );
+        else if (singElMult < 1)
+          attackerResult.log.push(
+            `Resisted... (${attacker.element} < ${defender.element})`,
+          );
       } else {
         attacker.hp -= b.selfDamage;
         attackerResult.log.push(

@@ -1,6 +1,12 @@
 import { create } from "zustand";
 import { socket } from "./socket.js";
-import { EVENTS, MODULES, TOTAL_TRAINING_POINTS, MODULE_NAMES, ELEMENT_NAMES } from "shared";
+import {
+  EVENTS,
+  MODULES,
+  TOTAL_TRAINING_POINTS,
+  MODULE_NAMES,
+  ELEMENT_NAMES,
+} from "shared";
 
 const useStore = create((set, get) => ({
   // --- Connection ---
@@ -17,6 +23,9 @@ const useStore = create((set, get) => ({
   roomState: null,
   opponent: null,
   opponentReady: false,
+
+  // --- AI Room ---
+  isAIRoom: false,
 
   // --- Bot Building ---
   botName: "",
@@ -75,6 +84,19 @@ const useStore = create((set, get) => ({
     });
   },
 
+  createAIRoom: () => {
+    socket.emit(EVENTS.CREATE_AI_ROOM, {}, (res) => {
+      if (res.error) return console.error(res.error);
+      set({
+        roomId: res.roomId,
+        screen: "build",
+        roomState: "building",
+        isAIRoom: true,
+        opponentReady: false,
+      });
+    });
+  },
+
   joinRoom: (roomId) => {
     socket.emit(EVENTS.JOIN_ROOM, { roomId }, (res) => {
       if (res.error) return console.error(res.error);
@@ -95,6 +117,7 @@ const useStore = create((set, get) => ({
       roomState: null,
       opponent: null,
       opponentReady: false,
+      isAIRoom: false,
       battleState: null,
       turnResults: [],
       battleEnd: null,
@@ -184,6 +207,7 @@ const useStore = create((set, get) => ({
       turnResults: [],
       battleEnd: null,
       opponentReady: false,
+      isAIRoom: roomId ? get().isAIRoom : false,
       simResult: null,
       botName: "",
       element: "VOLT",
@@ -247,6 +271,7 @@ socket.on("battle_start", (data) => {
     battleState: data,
     turnResults: [],
     battleEnd: null,
+    isAIRoom: data.vsAI || false,
   });
 });
 

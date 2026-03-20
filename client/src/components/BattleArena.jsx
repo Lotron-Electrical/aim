@@ -2,7 +2,15 @@ import React, { useRef, useEffect, useState } from "react";
 import { MODULE_NAMES, MODULES, ELEMENTS } from "shared";
 
 // Procedural 32x32 bot sprite based on module allocation
-function drawBotSprite(ctx, x, y, modules, scale = 2, flipped = false, element = null) {
+function drawBotSprite(
+  ctx,
+  x,
+  y,
+  modules,
+  scale = 2,
+  flipped = false,
+  element = null,
+) {
   const s = scale;
   const attack = modules.ATTACK || 0;
   const defense = modules.DEFENSE || 0;
@@ -30,7 +38,12 @@ function drawBotSprite(ctx, x, y, modules, scale = 2, flipped = false, element =
     ctx.shadowColor = auraColor;
     ctx.shadowBlur = 12;
     ctx.fillStyle = auraColor + "20";
-    ctx.fillRect(bodyX - 4 * s, bodyY - 4 * s, (bodyW + 8) * s, (bodyH + 8) * s);
+    ctx.fillRect(
+      bodyX - 4 * s,
+      bodyY - 4 * s,
+      (bodyW + 8) * s,
+      (bodyH + 8) * s,
+    );
     ctx.restore();
   }
 

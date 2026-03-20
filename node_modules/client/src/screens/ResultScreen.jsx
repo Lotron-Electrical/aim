@@ -3,7 +3,7 @@ import useStore from "../store.js";
 import { SoundManager } from "../audio/SoundManager.js";
 
 export default function ResultScreen() {
-  const { battleEnd, playerName, returnToLobby, leaveRoom } = useStore();
+  const { battleEnd, playerName, returnToLobby, leaveRoom, isAIRoom } = useStore();
 
   useEffect(() => {
     if (!battleEnd) return;
@@ -37,14 +37,27 @@ export default function ResultScreen() {
 
       {/* Stats */}
       <div className="w-full max-w-md space-y-3 mb-8">
-        <StatRow label="YOUR ELO" value={me.rating} delta={me.delta} />
-        <StatRow label="OPPONENT ELO" value={them.rating} delta={them.delta} />
-        <div className="border-t border-bg-panel my-2" />
-        <StatRow label="WINS" value={me.stats.wins} />
-        <StatRow label="LOSSES" value={me.stats.losses} />
-        <StatRow label="STREAK" value={me.stats.streak} />
-        <StatRow label="BEST STREAK" value={me.stats.bestStreak} />
-        <StatRow label="GENERATION" value={me.stats.generation} />
+        {isAIRoom ? (
+          <>
+            <div className="text-center font-pixel text-[8px] text-cyan mb-2">
+              AI MATCH — NO ELO CHANGES
+            </div>
+            <StatRow label="YOUR ELO" value={me.rating} />
+            <div className="border-t border-bg-panel my-2" />
+            <StatRow label="GENERATION" value={me.stats?.generation} />
+          </>
+        ) : (
+          <>
+            <StatRow label="YOUR ELO" value={me.rating} delta={me.delta} />
+            <StatRow label="OPPONENT ELO" value={them.rating} delta={them.delta} />
+            <div className="border-t border-bg-panel my-2" />
+            <StatRow label="WINS" value={me.stats.wins} />
+            <StatRow label="LOSSES" value={me.stats.losses} />
+            <StatRow label="STREAK" value={me.stats.streak} />
+            <StatRow label="BEST STREAK" value={me.stats.bestStreak} />
+            <StatRow label="GENERATION" value={me.stats.generation} />
+          </>
+        )}
       </div>
 
       {/* Actions */}

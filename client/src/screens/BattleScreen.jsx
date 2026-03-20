@@ -72,7 +72,16 @@ export default function BattleScreen() {
   );
 }
 
-function BotStatus({ name, player, hp, maxHp, energy, maxEnergy, element, side }) {
+function BotStatus({
+  name,
+  player,
+  hp,
+  maxHp,
+  energy,
+  maxEnergy,
+  element,
+  side,
+}) {
   const hpPct = Math.max(0, (hp / maxHp) * 100);
   const ePct = Math.max(0, (energy / maxEnergy) * 100);
   const hpColor =
@@ -82,9 +91,13 @@ function BotStatus({ name, player, hp, maxHp, energy, maxEnergy, element, side }
   const el = element ? ELEMENTS[element] : null;
 
   return (
-    <div className={`flex flex-col ${align} min-w-0 flex-1 sm:flex-initial sm:min-w-[120px]`}>
+    <div
+      className={`flex flex-col ${align} min-w-0 flex-1 sm:flex-initial sm:min-w-[120px]`}
+    >
       <span className="font-pixel text-[8px] text-cyan">{player}</span>
-      <div className={`flex items-center gap-1.5 ${side === "right" ? "flex-row-reverse" : ""}`}>
+      <div
+        className={`flex items-center gap-1.5 ${side === "right" ? "flex-row-reverse" : ""}`}
+      >
         <span className="font-pixel text-[10px] text-neon-green glow-green">
           {name}
         </span>

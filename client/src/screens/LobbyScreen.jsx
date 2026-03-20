@@ -3,13 +3,18 @@ import useStore from "../store.js";
 import { SoundManager } from "../audio/SoundManager.js";
 
 export default function LobbyScreen() {
-  const { playerName, player, roomList, createRoom, joinRoom, disconnect } =
+  const { playerName, player, roomList, createRoom, createAIRoom, joinRoom, disconnect } =
     useStore();
   const [joinCode, setJoinCode] = useState("");
 
   const handleCreate = () => {
     SoundManager.play("click");
     createRoom();
+  };
+
+  const handleAI = () => {
+    SoundManager.play("click");
+    createAIRoom();
   };
 
   const handleJoin = (roomId) => {
@@ -52,6 +57,14 @@ export default function LobbyScreen() {
                      py-4 hover:bg-neon-green hover:text-bg transition-colors glow-green"
         >
           [ CREATE ROOM ]
+        </button>
+
+        <button
+          onClick={handleAI}
+          className="w-full font-pixel text-sm bg-bg border-2 border-amber text-amber
+                     py-4 hover:bg-amber hover:text-bg transition-colors"
+        >
+          [ VS AI ]
         </button>
 
         <form onSubmit={handleJoinByCode} className="flex gap-2">

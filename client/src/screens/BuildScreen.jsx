@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import useStore from "../store.js";
-import { MODULES, MODULE_NAMES, TOTAL_TRAINING_POINTS, ELEMENTS, ELEMENT_NAMES } from "shared";
+import {
+  MODULES,
+  MODULE_NAMES,
+  TOTAL_TRAINING_POINTS,
+  ELEMENTS,
+  ELEMENT_NAMES,
+} from "shared";
 import TrainingSlider from "../components/TrainingSlider.jsx";
 import NeuralGrid from "../components/NeuralGrid.jsx";
 import BotCard from "../components/BotCard.jsx";
@@ -27,6 +33,7 @@ export default function BuildScreen() {
     opponentReady,
     leaveRoom,
     coreStats,
+    isAIRoom,
   } = useStore();
   const [showSim, setShowSim] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -58,7 +65,11 @@ export default function BuildScreen() {
           <p className="font-pixel text-[8px] text-cyan mt-1">Room: {roomId}</p>
         </div>
         <div className="flex items-center gap-3">
-          {opponent && (
+          {isAIRoom ? (
+            <span className="font-pixel text-[8px] text-amber">
+              vs AI OPPONENT
+            </span>
+          ) : opponent && (
             <span className="font-pixel text-[8px] text-amber">
               vs {opponent.name} {opponentReady ? "(READY)" : "(building...)"}
             </span>

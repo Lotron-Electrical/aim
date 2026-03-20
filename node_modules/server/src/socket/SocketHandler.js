@@ -7,6 +7,11 @@ import {
   generateCoreStats,
   runFullBattle,
   DUMMY_BOT,
+  AI_BOT_NAMES,
+  ELEMENT_NAMES,
+  MODULE_NAMES,
+  TOTAL_TRAINING_POINTS,
+  MAX_MODULE_LEVEL,
 } from "shared";
 import { GameManager } from "../game/GameManager.js";
 
@@ -38,6 +43,23 @@ export function setupSocketHandlers(io, lobby) {
 
       // Send room list
       socket.emit(EVENTS.ROOM_LIST, lobby.getRoomList());
+    });
+
+    // --- VS AI ---
+    socket.on(EVENTS.CREATE_AI_ROOM, (_, cb) => {
+      const room = lobby.createAIRoom(socket.id);
+      if (!room) return cb?.({ error: "Could not create AI room" });
+
+      socket.join(room.id);
+      const p1 = lobby.getPlayer(socket.id);
+      cb?.({ roomId: room.id });
+      io.to(room.id).emit(EVENTS.ROOM_UPDATE, {
+        roomId: room.id,
+        state: room.state,
+        player1: p1 ? { name: p1.name, rating: p1.rating } : null,
+        player2: { name: "AI OPPONENT", rating: "---" },
+        vsAI: true,
+      });
     });
 
     // --- Room Management ---
@@ -101,6 +123,10 @@ export function setupSocketHandlers(io, lobby) {
       cb?.({ success: true, coreStats: botConfig.coreStats });
 
       if (result.bothReady) {
+        // For AI rooms, generate random AI bot
+        if (room.vsAI) {
+          room.bots["AI"] = generateAIBot();
+        }
         io.to(room.id).emit(EVENTS.BOTH_READY, {});
         // Short delay then start battle
         setTimeout(() => gameManager.startBattle(room.id), 1000);
@@ -139,6 +165,31 @@ export function setupSocketHandlers(io, lobby) {
       handleLeaveRoom(socket);
       lobby.removePlayer(socket.id);
     });
+
+    function generateAIBot() {
+      const name = AI_BOT_NAMES[Math.floor(Math.random() * AI_BOT_NAMES.length)];
+      const element = ELEMENT_NAMES[Math.floor(Math.random() * ELEMENT_NAMES.length)];
+
+      // Random allocation of TOTAL_TRAINING_POINTS across modules (each 0-5)
+      const modules = {};
+      MODULE_NAMES.forEach((m) => (modules[m] = 0));
+      let remaining = TOTAL_TRAINING_POINTS;
+      while (remaining > 0) {
+        const mod = MODULE_NAMES[Math.floor(Math.random() * MODULE_NAMES.length)];
+        if (modules[mod] < MAX_MODULE_LEVEL) {
+          modules[mod]++;
+          remaining--;
+        }
+      }
+
+      return {
+        name,
+        element,
+        modules,
+        priorities: {},
+        coreStats: generateCoreStats(),
+      };
+    }
 
     function handleLeaveRoom(sock) {
       const room = lobby.getRoomForPlayer(sock.id);
