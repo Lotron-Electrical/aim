@@ -167,15 +167,18 @@ export function setupSocketHandlers(io, lobby) {
     });
 
     function generateAIBot() {
-      const name = AI_BOT_NAMES[Math.floor(Math.random() * AI_BOT_NAMES.length)];
-      const element = ELEMENT_NAMES[Math.floor(Math.random() * ELEMENT_NAMES.length)];
+      const name =
+        AI_BOT_NAMES[Math.floor(Math.random() * AI_BOT_NAMES.length)];
+      const element =
+        ELEMENT_NAMES[Math.floor(Math.random() * ELEMENT_NAMES.length)];
 
       // Random allocation of TOTAL_TRAINING_POINTS across modules (each 0-5)
       const modules = {};
       MODULE_NAMES.forEach((m) => (modules[m] = 0));
       let remaining = TOTAL_TRAINING_POINTS;
       while (remaining > 0) {
-        const mod = MODULE_NAMES[Math.floor(Math.random() * MODULE_NAMES.length)];
+        const mod =
+          MODULE_NAMES[Math.floor(Math.random() * MODULE_NAMES.length)];
         if (modules[mod] < MAX_MODULE_LEVEL) {
           modules[mod]++;
           remaining--;

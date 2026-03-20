@@ -290,9 +290,18 @@ export const ELEMENT_MULTIPLIER = {
 
 // --- AI Bot Names (for VS AI mode) ---
 export const AI_BOT_NAMES = [
-  "NEURON-7", "AXIOM-X", "CIPHER-9", "FLUX-3",
-  "PRISM-4", "VECTOR-1", "HELIX-6", "BINARY-8",
-  "ROGUE-5", "NEXUS-2", "DAEMON-0", "SPARK-11",
+  "NEURON-7",
+  "AXIOM-X",
+  "CIPHER-9",
+  "FLUX-3",
+  "PRISM-4",
+  "VECTOR-1",
+  "HELIX-6",
+  "BINARY-8",
+  "ROGUE-5",
+  "NEXUS-2",
+  "DAEMON-0",
+  "SPARK-11",
 ];
 
 // --- Dummy Bot for Training Sims ---

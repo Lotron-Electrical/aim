@@ -69,10 +69,12 @@ export default function BuildScreen() {
             <span className="font-pixel text-[8px] text-amber">
               vs AI OPPONENT
             </span>
-          ) : opponent && (
-            <span className="font-pixel text-[8px] text-amber">
-              vs {opponent.name} {opponentReady ? "(READY)" : "(building...)"}
-            </span>
+          ) : (
+            opponent && (
+              <span className="font-pixel text-[8px] text-amber">
+                vs {opponent.name} {opponentReady ? "(READY)" : "(building...)"}
+              </span>
+            )
           )}
           <button
             onClick={leaveRoom}

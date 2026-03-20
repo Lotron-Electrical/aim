@@ -3,7 +3,8 @@ import useStore from "../store.js";
 import { SoundManager } from "../audio/SoundManager.js";
 
 export default function ResultScreen() {
-  const { battleEnd, playerName, returnToLobby, leaveRoom, isAIRoom } = useStore();
+  const { battleEnd, playerName, returnToLobby, leaveRoom, isAIRoom } =
+    useStore();
 
   useEffect(() => {
     if (!battleEnd) return;
@@ -49,7 +50,11 @@ export default function ResultScreen() {
         ) : (
           <>
             <StatRow label="YOUR ELO" value={me.rating} delta={me.delta} />
-            <StatRow label="OPPONENT ELO" value={them.rating} delta={them.delta} />
+            <StatRow
+              label="OPPONENT ELO"
+              value={them.rating}
+              delta={them.delta}
+            />
             <div className="border-t border-bg-panel my-2" />
             <StatRow label="WINS" value={me.stats.wins} />
             <StatRow label="LOSSES" value={me.stats.losses} />

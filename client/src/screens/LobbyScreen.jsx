@@ -3,8 +3,15 @@ import useStore from "../store.js";
 import { SoundManager } from "../audio/SoundManager.js";
 
 export default function LobbyScreen() {
-  const { playerName, player, roomList, createRoom, createAIRoom, joinRoom, disconnect } =
-    useStore();
+  const {
+    playerName,
+    player,
+    roomList,
+    createRoom,
+    createAIRoom,
+    joinRoom,
+    disconnect,
+  } = useStore();
   const [joinCode, setJoinCode] = useState("");
 
   const handleCreate = () => {
