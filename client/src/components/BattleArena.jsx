@@ -1,8 +1,8 @@
 import React, { useRef, useEffect, useState } from "react";
-import { MODULE_NAMES, MODULES } from "shared";
+import { MODULE_NAMES, MODULES, ELEMENTS } from "shared";
 
 // Procedural 32x32 bot sprite based on module allocation
-function drawBotSprite(ctx, x, y, modules, scale = 2, flipped = false) {
+function drawBotSprite(ctx, x, y, modules, scale = 2, flipped = false, element = null) {
   const s = scale;
   const attack = modules.ATTACK || 0;
   const defense = modules.DEFENSE || 0;
@@ -22,6 +22,17 @@ function drawBotSprite(ctx, x, y, modules, scale = 2, flipped = false) {
   const bodyH = 14 + defense;
   const bodyX = x + (16 - bodyW / 2) * s;
   const bodyY = y + (20 - bodyH) * s;
+
+  // Element aura
+  if (element && ELEMENTS[element]) {
+    const auraColor = ELEMENTS[element].color;
+    ctx.save();
+    ctx.shadowColor = auraColor;
+    ctx.shadowBlur = 12;
+    ctx.fillStyle = auraColor + "20";
+    ctx.fillRect(bodyX - 4 * s, bodyY - 4 * s, (bodyW + 8) * s, (bodyH + 8) * s);
+    ctx.restore();
+  }
 
   // Body color based on dominant module
   const dominant = Object.entries(modules).sort((a, b) => b[1] - a[1])[0][0];
@@ -109,7 +120,23 @@ function drawBotSprite(ctx, x, y, modules, scale = 2, flipped = false) {
 
 export default function BattleArena({ bot1, bot2, latestTurn }) {
   const canvasRef = useRef(null);
+  const containerRef = useRef(null);
+  const [canvasSize, setCanvasSize] = useState({ w: 500, h: 300 });
   const [shakeBot, setShakeBot] = useState(null);
+
+  // Responsive canvas sizing
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const ro = new ResizeObserver((entries) => {
+      const cr = entries[0].contentRect;
+      const w = Math.floor(cr.width);
+      const h = Math.floor(w * (3 / 5));
+      if (w > 0) setCanvasSize({ w, h });
+    });
+    ro.observe(container);
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     if (latestTurn) {
@@ -152,8 +179,8 @@ export default function BattleArena({ bot1, bot2, latestTurn }) {
       w * 0.65 + (shakeBot === "bot2" ? (Math.random() - 0.5) * 8 : 0);
     const botY = h * 0.3;
 
-    drawBotSprite(ctx, bot1X, botY, bot1.modules, 3, false);
-    drawBotSprite(ctx, bot2X, botY, bot2.modules, 3, true);
+    drawBotSprite(ctx, bot1X, botY, bot1.modules, 3, false, bot1.element);
+    drawBotSprite(ctx, bot2X, botY, bot2.modules, 3, true, bot2.element);
 
     // Action indicators
     if (latestTurn) {
@@ -165,15 +192,15 @@ export default function BattleArena({ bot1, bot2, latestTurn }) {
         drawHitParticles(ctx, bot1X + 40, botY + 30, "#ff0040");
       }
     }
-  }, [bot1, bot2, latestTurn, shakeBot]);
+  }, [bot1, bot2, latestTurn, shakeBot, canvasSize]);
 
   return (
-    <div className="border border-neon-green-dim bg-bg p-2">
+    <div ref={containerRef} className="border border-neon-green-dim bg-bg p-2">
       <canvas
         ref={canvasRef}
-        width={500}
-        height={300}
-        className="w-full bg-bg"
+        width={canvasSize.w}
+        height={canvasSize.h}
+        className="w-full max-w-full bg-bg"
         style={{ imageRendering: "pixelated" }}
       />
     </div>

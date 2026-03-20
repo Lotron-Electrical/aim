@@ -8,6 +8,9 @@ import {
   STAT_RANGES,
   TOTAL_TRAINING_POINTS,
   MAX_MODULE_LEVEL,
+  ELEMENTS,
+  ELEMENT_NAMES,
+  ELEMENT_MULTIPLIER,
 } from "./constants.js";
 
 // --- Helpers ---
@@ -17,6 +20,17 @@ function rand(min, max) {
 
 function clamp(val, min, max) {
   return Math.max(min, Math.min(max, val));
+}
+
+// --- Element multiplier ---
+export function getElementMultiplier(attackerElement, defenderElement) {
+  if (!attackerElement || !defenderElement) return ELEMENT_MULTIPLIER.neutral;
+  if (attackerElement === defenderElement) return ELEMENT_MULTIPLIER.neutral;
+  const attEl = ELEMENTS[attackerElement];
+  if (!attEl) return ELEMENT_MULTIPLIER.neutral;
+  if (attEl.beats === defenderElement) return ELEMENT_MULTIPLIER.strong;
+  if (attEl.weakTo === defenderElement) return ELEMENT_MULTIPLIER.weak;
+  return ELEMENT_MULTIPLIER.neutral;
 }
 
 // --- Generate random core stats ---
@@ -63,6 +77,10 @@ export function validateBotConfig(config) {
     };
   }
 
+  if (config.element && !ELEMENT_NAMES.includes(config.element)) {
+    return { valid: false, error: `Invalid element: ${config.element}` };
+  }
+
   return { valid: true };
 }
 
@@ -81,6 +99,7 @@ export function createBattleBot(config) {
   const available = getAvailableBehaviors(config.modules);
   return {
     name: config.name,
+    element: config.element || "VOLT",
     modules: { ...config.modules },
     priorities: config.priorities || {},
     coreStats: { ...config.coreStats },
@@ -337,8 +356,10 @@ function executeAction(
     let totalDamage = 0;
     const numHits = b.hits || 1;
 
+    const elMult = getElementMultiplier(attacker.element, defender.element);
+
     for (let i = 0; i < numHits; i++) {
-      let damage = b.baseDamage;
+      let damage = Math.round(b.baseDamage * elMult);
       let hit = Math.random() < b.accuracy;
 
       // Dodge check
@@ -377,6 +398,12 @@ function executeAction(
     }
 
     attackerResult.damage = totalDamage;
+
+    if (elMult > 1) {
+      attackerResult.log.push(`Super-effective! (${attacker.element} > ${defender.element})`);
+    } else if (elMult < 1) {
+      attackerResult.log.push(`Resisted... (${attacker.element} < ${defender.element})`);
+    }
 
     // Counter-attack
     if (defender.counterAttack && totalDamage > 0) {
@@ -508,7 +535,7 @@ function executeAction(
     } else if (b.name === "Singularity") {
       const hit = Math.random() < b.accuracy;
       if (hit) {
-        let damage = b.baseDamage;
+        let damage = Math.round(b.baseDamage * getElementMultiplier(attacker.element, defender.element));
         if (defender.shieldActive) {
           const reduced = Math.round(damage * defender.shieldReduction);
           damage -= reduced;
@@ -517,6 +544,9 @@ function executeAction(
         defender.hp -= damage;
         attackerResult.damage = damage;
         attackerResult.log.push(`Singularity: CONNECTED! ${damage} damage!`);
+        const singElMult = getElementMultiplier(attacker.element, defender.element);
+        if (singElMult > 1) attackerResult.log.push(`Super-effective! (${attacker.element} > ${defender.element})`);
+        else if (singElMult < 1) attackerResult.log.push(`Resisted... (${attacker.element} < ${defender.element})`);
       } else {
         attacker.hp -= b.selfDamage;
         attackerResult.log.push(

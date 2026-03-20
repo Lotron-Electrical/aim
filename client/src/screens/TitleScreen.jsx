@@ -32,19 +32,19 @@ export default function TitleScreen() {
     if (bootStarted.current) return;
     bootStarted.current = true;
 
-    let i = 0;
-    const timer = setInterval(() => {
-      if (i < BOOT_LINES.length) {
-        setVisibleLines((prev) => [...prev, BOOT_LINES[i]]);
-        i++;
-      } else {
-        clearInterval(timer);
-        setTimeout(() => setBootPhase(1), 400);
-        setTimeout(() => setBootPhase(2), 1200);
-      }
-    }, 150);
+    const timeouts = [];
+    BOOT_LINES.forEach((line, idx) => {
+      const id = setTimeout(() => {
+        setVisibleLines((prev) => [...prev, line]);
+      }, idx * 150);
+      timeouts.push(id);
+    });
 
-    return () => clearInterval(timer);
+    const afterLines = BOOT_LINES.length * 150;
+    timeouts.push(setTimeout(() => setBootPhase(1), afterLines + 400));
+    timeouts.push(setTimeout(() => setBootPhase(2), afterLines + 1200));
+
+    return () => timeouts.forEach(clearTimeout);
   }, []);
 
   const handleSubmit = (e) => {

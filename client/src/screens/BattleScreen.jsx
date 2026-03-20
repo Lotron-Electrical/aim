@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from "react";
 import useStore from "../store.js";
+import { ELEMENTS } from "shared";
 import BattleArena from "../components/BattleArena.jsx";
 import BattleLog from "../components/BattleLog.jsx";
 import { SoundManager } from "../audio/SoundManager.js";
@@ -27,9 +28,9 @@ export default function BattleScreen() {
   const latestTurn = turnResults[turnResults.length - 1];
 
   return (
-    <div className="flex flex-col min-h-screen p-4">
+    <div className="flex flex-col min-h-screen p-2 sm:p-4">
       {/* HP Bars */}
-      <div className="flex justify-between items-start max-w-4xl mx-auto w-full mb-4">
+      <div className="flex justify-between items-start max-w-4xl mx-auto w-full mb-2 sm:mb-4 gap-2">
         <BotStatus
           name={bot1.name}
           player={player1Name}
@@ -37,6 +38,7 @@ export default function BattleScreen() {
           maxHp={bot1.maxHp}
           energy={bot1.energy}
           maxEnergy={bot1.maxEnergy}
+          element={bot1.element}
           side="left"
         />
         <div className="font-pixel text-sm text-amber glow-amber pt-4">
@@ -49,12 +51,13 @@ export default function BattleScreen() {
           maxHp={bot2.maxHp}
           energy={bot2.energy}
           maxEnergy={bot2.maxEnergy}
+          element={bot2.element}
           side="right"
         />
       </div>
 
       {/* Arena */}
-      <div className="flex-1 max-w-4xl mx-auto w-full grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="flex-1 max-w-4xl mx-auto w-full grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-4">
         <div className="lg:col-span-2">
           <BattleArena bot1={bot1} bot2={bot2} latestTurn={latestTurn} />
         </div>
@@ -69,20 +72,31 @@ export default function BattleScreen() {
   );
 }
 
-function BotStatus({ name, player, hp, maxHp, energy, maxEnergy, side }) {
+function BotStatus({ name, player, hp, maxHp, energy, maxEnergy, element, side }) {
   const hpPct = Math.max(0, (hp / maxHp) * 100);
   const ePct = Math.max(0, (energy / maxEnergy) * 100);
   const hpColor =
     hpPct > 50 ? "bg-neon-green" : hpPct > 25 ? "bg-amber" : "bg-red";
   const align =
     side === "right" ? "text-right items-end" : "text-left items-start";
+  const el = element ? ELEMENTS[element] : null;
 
   return (
-    <div className={`flex flex-col ${align} min-w-[120px]`}>
+    <div className={`flex flex-col ${align} min-w-0 flex-1 sm:flex-initial sm:min-w-[120px]`}>
       <span className="font-pixel text-[8px] text-cyan">{player}</span>
-      <span className="font-pixel text-[10px] text-neon-green glow-green">
-        {name}
-      </span>
+      <div className={`flex items-center gap-1.5 ${side === "right" ? "flex-row-reverse" : ""}`}>
+        <span className="font-pixel text-[10px] text-neon-green glow-green">
+          {name}
+        </span>
+        {el && (
+          <span
+            className="font-pixel text-[7px] px-1 border"
+            style={{ color: el.color, borderColor: el.color + "80" }}
+          >
+            {el.abbr}
+          </span>
+        )}
+      </div>
       {/* HP bar */}
       <div className="w-full mt-1">
         <div className="flex justify-between">

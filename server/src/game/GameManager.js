@@ -43,6 +43,7 @@ export class GameManager {
     this.io.to(roomId).emit("battle_start", {
       bot1: {
         name: bot1.name,
+        element: bot1.element,
         hp: bot1.hp,
         maxHp: bot1.maxHp,
         energy: bot1.energy,
@@ -51,6 +52,7 @@ export class GameManager {
       },
       bot2: {
         name: bot2.name,
+        element: bot2.element,
         hp: bot2.hp,
         maxHp: bot2.maxHp,
         energy: bot2.energy,

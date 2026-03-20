@@ -247,6 +247,46 @@ export const ELO = {
   K_FACTOR: 32,
 };
 
+// --- Elements ---
+export const ELEMENTS = {
+  VOLT: {
+    name: "VOLT",
+    color: "#ffe040",
+    abbr: "V",
+    beats: "CRYO",
+    weakTo: "VOID",
+  },
+  THERMAL: {
+    name: "THERMAL",
+    color: "#ff4020",
+    abbr: "T",
+    beats: "VOID",
+    weakTo: "CRYO",
+  },
+  CRYO: {
+    name: "CRYO",
+    color: "#40d0ff",
+    abbr: "C",
+    beats: "THERMAL",
+    weakTo: "VOLT",
+  },
+  VOID: {
+    name: "VOID",
+    color: "#c040ff",
+    abbr: "X",
+    beats: "VOLT",
+    weakTo: "THERMAL",
+  },
+};
+
+export const ELEMENT_NAMES = Object.keys(ELEMENTS);
+
+export const ELEMENT_MULTIPLIER = {
+  strong: 1.5,
+  weak: 0.5,
+  neutral: 1.0,
+};
+
 // --- Dummy Bot for Training Sims ---
 export const DUMMY_BOT = {
   name: "SPARRING-UNIT",
@@ -258,4 +298,5 @@ export const DUMMY_BOT = {
     OVERCLOCK: ["Burst Mode"],
   },
   coreStats: { hp: 100, energy: 60, clockSpeed: 10 },
+  element: "VOLT",
 };
